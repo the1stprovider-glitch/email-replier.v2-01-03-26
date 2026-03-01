@@ -13,3 +13,4 @@ openai
 pandas
 numpy
 python-dotenv
+tiktoken
