@@ -1,9 +1,5 @@
 streamlit
-transformers
-torch
-sentence-transformers
 scikit-learn
-faiss-cpu
 msal
 requests
 google-auth
