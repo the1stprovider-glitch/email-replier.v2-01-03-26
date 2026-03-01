@@ -1,0 +1,15 @@
+streamlit
+transformers
+torch
+sentence-transformers
+scikit-learn
+faiss-cpu
+msal
+requests
+google-auth
+google-auth-oauthlib
+google-api-python-client
+openai
+pandas
+numpy
+python-dotenv
