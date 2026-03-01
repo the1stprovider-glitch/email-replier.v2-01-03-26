@@ -1,22 +1,46 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
-from config import MODEL_NAME
+from openai import OpenAI
+from config import OPENAI_API_KEY
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 class EmailClassifier:
 
-    def __init__(self):
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            MODEL_NAME, num_labels=3)
-
     def classify(self, text):
-        inputs = self.tokenizer(
-            text, return_tensors="pt", truncation=True, padding=True)
 
-        outputs = self.model(**inputs)
-        probs = torch.nn.functional.softmax(outputs.logits, dim=-1)
-        score = torch.max(probs).item()
-        category = torch.argmax(probs).item()
+        prompt = f"""
+You are an executive email triage system.
 
-        labels = ["Very Important", "Medium Important", "Not Important"]
-        return labels[category], score
+Classify the following email into EXACTLY ONE of these:
+
+- Very Important
+- Medium Important
+- Not Important
+
+Definitions:
+
+Very Important:
+Executive-level, legal, financial, urgent deadlines,
+high authority sender, sensitive matters.
+
+Medium Important:
+Project discussions, follow-ups, internal coordination.
+
+Not Important:
+Basic scheduling, confirmations, small talk,
+simple timing questions, low impact messages.
+
+Email:
+{text}
+
+Respond with only the category name.
+"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
+
+        category = response.choices[0].message.content.strip()
+
+        return category, 0.95
